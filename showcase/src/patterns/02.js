@@ -1,20 +1,7 @@
-import React from 'react'
-
 // CustomHookForAnimation
-
-import {useEffect, useState} from "react";
-import {initializeAnimationTimeline, MediumClap} from "./01";
-
-const useClapAnimation = () => {
-    const [animationTimeline, setAnimationTimeline] = useState(() => new mojs.Timeline())
-
-    useEffect(() => {
-        const newAnimationTimeline = initializeAnimationTimeline(animationTimeline)
-        setAnimationTimeline(newAnimationTimeline)
-    }, [])
-
-    return animationTimeline
-}
+import React, {useCallback, useEffect, useState} from 'react'
+import {initializeAnimationTimeline} from "./01";
+import MediumClap from "./MediumClap";
 
 /** ====================================
  *        🔰USAGE
@@ -22,10 +9,33 @@ const useClapAnimation = () => {
  may consume the component API
  ==================================== **/
 
+export const useClapAnimation = () => {
+    const [animationTimeline, setAnimationTimeline] = useState(() => new mojs.Timeline())
+
+    const [{clapRef, clapCountRef, clapTotalRef}, setRefs] = useState({})
+
+    const setRef = useCallback((node) => {
+        setRefs(prevState => ({
+            ...prevState,
+            [node.dataset.refkey]: node
+        }))
+    }, [])
+
+    useEffect(() => {
+        const newAnimationTimeline = initializeAnimationTimeline(new mojs.Timeline(), {
+            clapEl: clapRef,
+            clapCountEl: clapCountRef,
+            clapTotalEl: clapTotalRef
+        })
+        setAnimationTimeline(newAnimationTimeline)
+    }, [clapRef, clapCountRef, clapTotalRef])
+
+    return {animationTimeline, setRef}
+}
+
 const Usage = () => {
-    return (
-        <MediumClap />
-    )
+    const {animationTimeline, setRef} = useClapAnimation()
+    return <MediumClap animationTimeline={animationTimeline} setRef={setRef}/>
 };
 
 export default Usage;
