@@ -1,7 +1,7 @@
 // CustomHookForAnimation
 import React, {useCallback, useEffect, useState} from 'react'
-import {initializeAnimationTimeline} from "./01";
 import MediumClap from "./MediumClap";
+import initializeAnimationTimeline from "./initializeAnimationTimeline";
 
 /** ====================================
  *        🔰USAGE
@@ -22,12 +22,14 @@ export const useClapAnimation = () => {
     }, [])
 
     useEffect(() => {
-        const newAnimationTimeline = initializeAnimationTimeline(new mojs.Timeline(), {
+        const newAnimationTimeline = initializeAnimationTimeline(animationTimeline, {
             clapEl: clapRef,
             clapCountEl: clapCountRef,
             clapTotalEl: clapTotalRef
         })
-        setAnimationTimeline(newAnimationTimeline)
+        if (newAnimationTimeline) {
+            setAnimationTimeline(newAnimationTimeline)
+        }
     }, [clapRef, clapCountRef, clapTotalRef])
 
     return {animationTimeline, setRef}
